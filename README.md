@@ -1,15 +1,17 @@
 # Forma Estructura Metalica
 
-Landing page de demostración con cotizador interactivo para techos metálicos.
+Landing page de presentación y galería de soluciones, con un cotizador de techos en una pantalla independiente.
 
-## Ver la página localmente
+## Ver el sitio
 
-Abre `dist/index.html` en un navegador moderno. No requiere backend.
+GitHub Pages publica automáticamente el contenido de `dist/` en cada actualización de `main`.
 
-## Publicar con GitHub Pages
+## Archivos
 
-El workflow de GitHub Actions publica automáticamente `dist/` cuando se actualiza la rama `main`. En el repositorio, configura **Settings → Pages → Build and deployment → Source → GitHub Actions** si Pages aún no está habilitado.
+- `dist/index.html`: empresa, soluciones y proyectos de referencia.
+- `dist/cotizador.html`: cotizador de techos con vista 3D y estimación orientativa.
+- `dist/style.css`, `dist/app.js`, `dist/calc.js`: estilos e interacción.
 
-## Sobre esta demo
+## Sobre las ilustraciones y estimaciones
 
-Los precios y perfiles son referencias ficticias para mostrar el flujo. El cálculo no constituye diseño ni validación estructural y debe revisarlo el taller antes de fabricar. No se envían solicitudes ni se realizan cobros; datos, fotos y borradores permanecen en el navegador.
+Las imágenes de la portada son ilustraciones de referencia, no fotografías de obras realizadas. Se pueden sustituir por fotos reales del taller. Los precios y perfiles son ejemplos; la estimación no constituye diseño ni validación estructural y debe revisarla el taller antes de fabricar. No se envían solicitudes ni se realizan cobros.
