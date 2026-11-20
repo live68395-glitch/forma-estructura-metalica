@@ -31,7 +31,19 @@ function makeViewer(canvas,hero=false){const ctx=canvas.getContext('2d');let yaw
  function dimension(a,b,label){const col=hero?'#f3b785':'#9c432b';line(a,b,col,1);for(const point of[a,b]){const q=project(point);ctx.strokeStyle=col;ctx.beginPath();ctx.moveTo(q[0]-3,q[1]-4);ctx.lineTo(q[0]+3,q[1]+4);ctx.stroke();}const q=project(a.map((v,i)=>(v+b[i])/2));ctx.font='600 12px Arial';const tw=ctx.measureText(label).width;ctx.fillStyle=hero?'#102830':'#e7eeeb';ctx.fillRect(q[0]-tw/2-5,q[1]-10,tw+10,20);ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(label,q[0],q[1]+4);}
  dimension([0,.02,L+.8],[W,.02,L+.8],num(W)+' m');dimension([W+.8,.02,0],[W+.8,.02,L],num(L)+' m');if(!hero)dimension([-.65,0,0],[-.65,H,0],num(H)+' m');
  }
- if(!hero||canvas.id==='heroCanvas'){canvas.addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(!drag)return;yaw+=(e.clientX-drag[0])*(Math.PI*2/Math.max(1,canvas.clientWidth));tilt=Math.max(.15,Math.min(.9,tilt+(e.clientY-drag[1])*.006));drag=[e.clientX,e.clientY];draw();});for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,()=>drag=null);canvas.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();if(e.key==='ArrowLeft')yaw-=.12;if(e.key==='ArrowRight')yaw+=.12;if(e.key==='ArrowUp')tilt=Math.min(.9,tilt+.08);if(e.key==='ArrowDown')tilt=Math.max(.15,tilt-.08);draw();}});}
+ if(!hero||canvas.id==='heroCanvas'){
+  const heroCanvas=canvas.id==='heroCanvas';
+  function rotateTo(x,y){if(!drag)return;yaw+=(x-drag[0])*(Math.PI*2/Math.max(1,canvas.clientWidth));tilt=Math.max(.15,Math.min(.9,tilt+(y-drag[1])*.006));drag=[x,y];draw();}
+  canvas.addEventListener('pointerdown',e=>{if(heroCanvas&&e.pointerType==='touch')return;drag=[e.clientX,e.clientY];try{canvas.setPointerCapture(e.pointerId);}catch{}});
+  canvas.addEventListener('pointermove',e=>{if(heroCanvas&&e.pointerType==='touch')return;rotateTo(e.clientX,e.clientY);});
+  for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>{if(heroCanvas&&e.pointerType==='touch')return;drag=null;});
+  if(heroCanvas){
+   canvas.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const t=e.touches[0];drag=[t.clientX,t.clientY];e.preventDefault();},{passive:false});
+   canvas.addEventListener('touchmove',e=>{if(!drag||e.touches.length!==1)return;const t=e.touches[0];rotateTo(t.clientX,t.clientY);e.preventDefault();},{passive:false});
+   const endTouch=()=>{drag=null;};canvas.addEventListener('touchend',endTouch,{passive:false});canvas.addEventListener('touchcancel',endTouch,{passive:false});
+  }
+  canvas.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();if(e.key==='ArrowLeft')yaw-=.12;if(e.key==='ArrowRight')yaw+=.12;if(e.key==='ArrowUp')tilt=Math.min(.9,tilt+.08);if(e.key==='ArrowDown')tilt=Math.max(.15,tilt-.08);draw();}});
+ }
  new ResizeObserver(draw).observe(canvas);return api;
 }
 let viewer=null;const heroCanvas=$('heroCanvas');const heroViewer=heroCanvas?makeViewer(heroCanvas,true):null;if(heroViewer)heroViewer.draw();if(form){viewer=makeViewer($('modelCanvas'));update();form.addEventListener('input',update);form.addEventListener('submit',e=>e.preventDefault());$('showCover').addEventListener('change',()=>viewer.draw());$('viewReset').onclick=()=>viewer.reset();$('rotateLeft').onclick=()=>viewer.rotate(-.25);$('rotateRight').onclick=()=>viewer.rotate(.25);
